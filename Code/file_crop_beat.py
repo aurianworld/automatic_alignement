@@ -3,11 +3,11 @@
 import argparse
 
 def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
-    ''' crop an audio or data file from t_start for a certain length
+    ''' crop an audio and data file from beat_start to beat_stop in the performance
     
     Keyword arguments:
-    t_start -- the starting point in the audio/data file
-    length -- the length of the crop 
+    beat_start -- the starting point in the audio and data file 
+    beat_start -- the ending point in the audio and data file
     audio_path -- the audio path
     data_path -- the data path
     '''
