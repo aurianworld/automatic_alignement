@@ -8,8 +8,9 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
     Keyword arguments:
     beat_start -- the starting point in the audio and data file 
     beat_start -- the ending point in the audio and data file
+    data_path -- the data path - It is important to pass the data_path before the audio_path
     audio_path -- the audio path
-    data_path -- the data path
+    
     '''
 
     import subprocess
@@ -20,8 +21,12 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
 
     t2 = 0
     t3 = 0
+    t_start = 0
+    t_stop = 0
 
     for arg in kwargs:
+
+        #First we crop the annotation file
         if arg == "data_path" and kwargs.get(arg) != None : 
             t = time.time()
 
@@ -51,7 +56,7 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
 
             t3 = time.time() - t
 
-
+        #We crop the audio file
         if arg == "audio_path" and kwargs.get(arg) != None :
             t = time.time()
             audio_path = kwargs.get(arg)
