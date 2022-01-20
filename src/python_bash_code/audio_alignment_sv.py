@@ -4,13 +4,16 @@ import argparse
 import configparser
 import librosa
 import numpy as np 
+import scipy
+import pandas as pd
+
 from synctoolbox.feature.utils import estimate_tuning
 from synctoolbox.feature.pitch_onset import audio_to_pitch_onset_features
 from synctoolbox.feature.dlnco import pitch_onset_features_to_DLNCO
 from synctoolbox.feature.pitch import audio_to_pitch_features
 from synctoolbox.feature.chroma import pitch_to_chroma, quantize_chroma
 from synctoolbox.feature.chroma import quantized_chroma_to_CENS
-from synctoolbox.dtw.utils import compute_optimal_chroma_shift, shift_chroma_vectors
+from synctoolbox.dtw.utils import compute_optimal_chroma_shift, shift_chroma_vectors, evaluate_synchronized_positions
 from synctoolbox.dtw.mrmsdtw import sync_via_mrmsdtw
 from synctoolbox.dtw.utils import make_path_strictly_monotonic
 
@@ -37,6 +40,7 @@ def audio_alignment_sv(audio_1_path, audio_2_path, config_path):
     output_wp = config.get("config", "output_wp") #output path of the warping path
     step_weights = np.array([1.5, 1.5, 2.0]) #DTW step weights
     threshold_rec = 10 ** 6 #Defines the maximum area that is spanned by the rectangle of two consecutive elements in the alignment 
+    result = config.getint("config","result") #Flag to compute the results of the alignement
 
 
     #Loading the audio
@@ -74,6 +78,21 @@ def audio_alignment_sv(audio_1_path, audio_2_path, config_path):
     for _, pair in enumerate(wp.T/feature_rate):
             print(tuple(pair)[0],',',tuple(pair)[1])
 
+
+    #Computing the MAE and Standard deviation to evaluate the alignment 
+
+    if result : 
+        header_name = ["time","beat"]
+
+
+        #DEFINE FILE_PATH_REF and FILE_PATH_ALIGN FROM the audio path TODO 
+        beat_annotations_ref = pd.read_csv(filepath_or_buffer=file_path_ref+"_s"+str(beat_start)+"_e"+str(beat_stop)+".csv",names = header_name)
+        beat_annotations_align = pd.read_csv(filepath_or_buffer=file_path_align+"_s"+str(beat_start)+"_e"+str(beat_stop)+".csv", names = header_name)
+        beat_annotations_align = beat_annotations_align.loc[beat_annotations_align['beat'].isin(beat_annotations_ref['beat'])].reset_index(drop = True) #We make sure that we compare only the same beats 
+
+
+        beat_positions_ref_transferred_to_align = scipy.interpolate.interp1d(wp2[0]/ feature_rate , wp2[1]/ feature_rate , kind='linear')(beat_annotations_ref["time"])
+        mean_absolute_error, accuracy_at_tolerances = evaluate_synchronized_positions(beat_annotations_align["time"] * 1000, beat_positions_ref_transferred_to_align * 1000)
 
 
 
