@@ -5,7 +5,7 @@ import tensorflow_io as tfio
 
 #Parameters 
 VALID_SPLIT = 0.2
-BATCHSIZE = 10
+BATCHSIZE = 56
 
 
 #Specify the folder with the audio to process 
