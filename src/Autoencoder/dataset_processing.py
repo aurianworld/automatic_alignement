@@ -3,13 +3,6 @@ import argparse
 import tensorflow as tf
 import tensorflow_io as tfio
 
-#Parameters 
-VALID_SPLIT = 0.2
-BATCHSIZE = 56
-
-
-#Specify the folder with the audio to process 
-audio_paths = '/osboxes/Desktop/Dataset/01_Audio/01_Full_Symphonies'
 
 #Useful functions 
 def path_to_audio(path):
