@@ -13,90 +13,138 @@ audio_paths = '/osboxes/Desktop/Dataset/01_Audio/01_Full_Symphonies'
 
 #Useful functions 
 def path_to_audio(path):
-    """Reads and decodes an audio file."""
+    """Reads and decodes an audio file (MP3) for now"""
     audio = tf.io.read_file(path)
-    audio, _ = tf.audio.decode_wav(audio,2, -1)
-    # audio = tfio.audio.decode_mp3(audio)
-    print(audio.shape)
+    audio = tfio.audio.decode_mp3(audio)
     return audio
 
 def paths_to_dataset(audio_paths):
-    """Constructs a dataset of audios"""
+    """Constructs a dataset of audios and labels."""
     path_ds = tf.data.Dataset.from_tensor_slices(audio_paths)
     audio_ds = path_ds.map(lambda x: path_to_audio(x))
+
+    #Converting Stereo to mono by summing the channel and dividing by 2
     audio_ds = audio_ds.map(lambda x: tf.math.divide(
         tf.reduce_sum(x,axis=1,keepdims=True),
         tf.constant([2.])))
+    
     return audio_ds
 
-def audio_to_spectrograms(audio):
-    """Compute the spectrogram of an audio tensor"""
-    print(audio.shape)
-    audio = tf.squeeze(audio, axis=-1)
+
+def audio_to_spectrograms(x):
+    # Since tf.signal.fft applies FFT on the innermost dimension,
+    # we need to squeeze the dimensions and then expand them again
+    # after FFT
+    x = tf.squeeze(x, axis=-1)
+    x = tfio.audio.spectrogram(x, nfft=256, window=256, stride=128) 
+    x = tf.expand_dims(x, axis=-1)
     
-    spectrogram = tfio.audio.spectrogram(audio, nfft=256, window=256, stride=128)
-    print(spectrogram.shape)
-    spectrogram = tf.expand_dims(spectrogram, axis=-1)
-    print(spectrogram.shape)
+    return x
 
-    return spectrogram
 
+def spectrograms_to_melspectrograms(x):
+    #Takes a spectrogram tensor and convert it into a a Mel Spectrograms
+    x = tf.squeeze(x, axis=-1)    
+    x = tfio.audio.melscale(x, rate=16000, mels=128, fmin=20, fmax=8000)
+    x = tf.expand_dims(x, axis=-1)
+    print(x[:,:128,:].shape)
+    # Return the mel_spectrogram without the bin for the highest frequencies 
+    # since we want only 128 frequency bins
+
+    return x[:,:128,:]
+
+
+def normalize_spectrograms(x):
+    # Normalizing along the frequency axis by L2 norm
+    x = tf.math.l2_normalize(x, axis=1, epsilon=1e-12, name=None, dim=None) 
+
+    return x    
+
+def splitting_spectrograms(tensor,n):
+    #We want to split our whole spectogram into bins of size n
+    a =[]
+    q, r = tensor.shape[0]//n, tensor.shape[0]%n
+    for i in range(q): 
+      a.append(tensor[n*i:n*(i+1),:,:])
+    a.append(tf.concat([tensor[q*n:,:,:],tf.zeros([n - r,128,1])],0))
+
+    return tf.data.Dataset.from_tensor_slices(a)
 
 #Main Function
-def dataset_processing(audio_paths, VALID_SPLIT=0.1, BATCHSIZE=10):
-    """This function take the audio path of the dataset and outputs a training
-        and testing dataset of Spectrograms. The shape is (Batch_size, spectrogram_length, 129, 1)
+def dataset_processing(audio_paths, output_path, nb_of_frames=128, BATCHSIZE=32):
+    """This function take the audio path of the dataset and outputs a 
+    of Mel Spectrograms. The shape is (Batch_size, nb of frames, 128, 1)
 
     Args:
         audio_paths (string): the path of the audio folder we want to process
-        VALID_SPLIT (float, optional): The pourcentage of samples to use for testing. Defaults to 0.1.
-        BATCHSIZE (int, optional): The batch size. Defaults to 10.
+        output_path (string): the path where to save the dataset
+        BATCHSIZE (int, optional): The batch size. Defaults to 32.
+        nb_of_frames (int, optional): The number of frames that the mel Spectrograms
+        will have.
 
     Returns:
         PrefetchDataset: Returns the training and testing datasets.
     """
-    #Split into training and testing set
-    num_val_samples = int(VALID_SPLIT * len(audio_paths))
-    print("Using {} files for training.".format(len(audio_paths) - num_val_samples))
-    train_audio_paths = audio_paths[:-num_val_samples]
+    #Loading the audio from the paths
+    ds = paths_to_dataset(audio_paths)
 
-    print("Using {} files for testing.".format(num_val_samples))
-    test_audio_paths = audio_paths[-num_val_samples:]
-
-    #Create to Dataset, one for training and one for testing
-    train_ds = paths_to_dataset(train_audio_paths)
-    train_ds = train_ds.shuffle(buffer_size=32 * 8, seed=4).batch(BATCHSIZE)
-
-    testing_ds = paths_to_dataset(test_audio_paths)
-    testing_ds = testing_ds.shuffle(buffer_size=32*8, seed=4).batch(BATCHSIZE)
-
-    #Converting the audio wave into spectrograms 
-    train_ds = train_ds.map(
+    #Transforming the audios in Spectrograms
+    ds = ds.map(
         lambda x: audio_to_spectrograms(x), num_parallel_calls=tf.data.AUTOTUNE
-        )
+    )
 
-    testing_ds = train_ds.map(
-        lambda x: audio_to_spectrograms(x), num_parallel_calls=tf.data.AUTOTUNE
-        )
+    #Transforming the Spectrograms into Mel Spectrograms
+    ds = ds.map(
+        lambda x: spectrograms_to_melspectrograms(x), num_parallel_calls=tf.data.AUTOTUNE
+    )
 
-    #Adding the input as the expected output 
+    #Normalizing the Mel Spectrograms Tensor 
+    ds = ds.map(
+        lambda x: normalize_spectrograms(x), num_parallel_calls=tf.data.AUTOTUNE
+    )
 
-    train_ds = tf.data.Dataset.zip((train_ds,train_ds))
-    train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
+    #We split each element of the dataset into a dataset into dataset of 
+    #size (Batch_size, nb of frames, 128, 1)
+    splitted_mel_spectrograms_ds = []
+    for elem in ds:
+        splitted_mel_spectrograms_ds.append(splitting_spectrograms(elem,nb_of_frames).batch(batch_size = BATCHSIZE))
 
-    testing_ds = tf.data.Dataset.zip((testing_ds,testing_ds))
-    testing_ds = testing_ds.prefetch(tf.data.AUTOTUNE)
-    return train_ds, testing_ds 
+    #We now concatenate all the "small" dataset 
+
+    ds = splitted_mel_spectrograms_ds[0]
+
+    for i in range(1,len(splitted_mel_spectrograms_ds)):
+        ds.concatenate(splitted_mel_spectrograms_ds[i])
+
+    #We Save the Dataset 
+    tf.data.experimental.save(ds, output_path)
+    print("Dataset saved in: ", output_path)
+
+    return ds 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Align to audio files.')
 
     parser.add_argument('--audio_path', type=str, 
                             help='Path of the dataset of the audios')
-    parser.add_argument('--validsplit', type=float, 
-                            help='pourcentage of samples for testing, default 0.1')
+    parser.add_argument('--output_path', type=str, 
+                            help='Path where the dataset is saved')
+    parser.add_argument('--nb_of_frames', type=int, 
+                            help='Number of frames the Mel spectrograms will have, default 128')
     parser.add_argument('--batchsize', type=int, 
                             help='batch size, default 10')
 
     args = parser.parse_args()
-    dataset_processing(args.audio_path, args.validsplit, args.batchsize)
+
+    if args.nb_of_frames == None and args.batchsize != None :
+        dataset_processing(args.audio_path, args.output_path, BATCHSIZE= args.batchsize)
+
+    if args.nb_of_frames != None and args.batchsize == None :
+        dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames)
+
+    if args.nb_of_frames == None and args.batchsize == None :
+        dataset_processing(args.audio_path, args.output_path,)
+
+    else:
+        dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames,
+                             BATCHSIZE= args.batchsize)
