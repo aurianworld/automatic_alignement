@@ -9,7 +9,7 @@ import os
 
 
 def beat_reg(file_path, precision = 1e-5):
-    '''Take a beat-per-beat annotation file and outputs all the regular beat
+    '''Process beat-per-beat annotation files and outputs all the regular beat (consecutive beat with exact same time interval)
     
     file_path : str of the directory where the annotations are//
     precision : precision of the regularity //
