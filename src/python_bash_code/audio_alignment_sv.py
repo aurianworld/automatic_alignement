@@ -91,7 +91,7 @@ def audio_alignment_sv(audio_1_path, audio_2_path, config_path):
         beat_annotations_align = beat_annotations_align.loc[beat_annotations_align['beat'].isin(beat_annotations_ref['beat'])].reset_index(drop = True) #We make sure that we compare only the same beats 
 
 
-        beat_positions_ref_transferred_to_align = scipy.interpolate.interp1d(wp2[0]/ feature_rate , wp2[1]/ feature_rate , kind='linear')(beat_annotations_ref["time"])
+        beat_positions_ref_transferred_to_align = scipy.interpolate.interp1d(wp[0]/ feature_rate , wp[1]/ feature_rate , kind='linear')(beat_annotations_ref["time"])
         mean_absolute_error, accuracy_at_tolerances = evaluate_synchronized_positions(beat_annotations_align["time"] * 1000, beat_positions_ref_transferred_to_align * 1000)
 
 
