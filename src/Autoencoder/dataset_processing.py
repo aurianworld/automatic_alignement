@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+
 import os
 import argparse
 import tensorflow as tf
@@ -49,7 +52,7 @@ def spectrograms_to_melspectrograms(x):
 
 def normalize_spectrograms(x):
     # Normalizing along the frequency axis by L2 norm
-    x = tf.math.l2_normalize(x, axis=1, epsilon=1e-12, name=None, dim=None) 
+    x = tf.math.l2_normalize(x, axis=1, epsilon=1e-12) 
 
     return x    
 
@@ -78,8 +81,13 @@ def dataset_processing(audio_paths, output_path, nb_of_frames=128, BATCHSIZE=32)
     Returns:
         PrefetchDataset: Returns the training and testing datasets.
     """
+    #We Work in the directory where the audio are
+    command = (audio_paths)
+    os.chdir(command)
+    print(os.getcwd())
+
     #Loading the audio from the paths
-    ds = paths_to_dataset(audio_paths)
+    ds = paths_to_dataset(os.listdir(audio_paths))
 
     #Transforming the audios in Spectrograms
     ds = ds.map(
@@ -136,7 +144,7 @@ if __name__ == '__main__':
         dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames)
 
     if args.nb_of_frames == None and args.batchsize == None :
-        dataset_processing(args.audio_path, args.output_path,)
+        dataset_processing(args.audio_path, args.output_path)
 
     else:
         dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames,
