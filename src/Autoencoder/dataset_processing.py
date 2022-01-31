@@ -126,7 +126,7 @@ def dataset_processing(audio_paths, output_path, nb_of_frames=128, BATCHSIZE=32)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Align to audio files.')
+    parser = argparse.ArgumentParser(description='Process the raw audio to create a dataset.')
 
     parser.add_argument('--audio_path', type=str, 
                             help='Path of the dataset of the audios')
