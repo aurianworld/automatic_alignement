@@ -6,7 +6,10 @@ def autoencoder(encoder_inputs):
     """Custom autoencoder model with attention layer
 
     Args:
-        encoder_inputs (Tensor flow Input Layer): The input shape to be passed to the autoencoder
+        encoder_inputs (Tensor flow Input Layer): The input shape to be passed to the autoencoderncoder_inputs
+
+    Returns:
+        Autoencoder, Encoder (keras models): It returns the full autoencoder and the encoder models.
     """
 
     # Encoder
