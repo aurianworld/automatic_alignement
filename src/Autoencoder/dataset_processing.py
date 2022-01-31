@@ -123,6 +123,8 @@ def dataset_processing(audio_paths, output_path, nb_of_frames=128, BATCHSIZE=32)
 
     return ds 
 
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Align to audio files.')
 
