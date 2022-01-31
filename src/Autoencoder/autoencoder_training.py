@@ -20,7 +20,7 @@ def training_pipeline(dataset_path, model_output_path, SPLIT = 0.7, epochs = 100
         epochs (int, optional): Number of epochs to run the model. Defaults to 100.
     """
 
-    #We Work in the directory where the audio are
+    #We Work in the directory of the dataset
     command = (dataset_path)
     os.chdir(command)
 
@@ -33,12 +33,12 @@ def training_pipeline(dataset_path, model_output_path, SPLIT = 0.7, epochs = 100
 
     #We split the dataset into training and testing
     #First we shuffle the Dataset 
-    ds = ds.shuffle()
-    Datasetsize = (tf.data.experimental.cardinality(ds).numpy())
+    ds = ds.shuffle(buffer_size = 32 * 32)
 
+    #We Split it
+    Datasetsize = (tf.data.experimental.cardinality(ds).numpy())
     train_dataset = ds.take(int(SPLIT*Datasetsize)) 
     test_dataset = ds.skip(int(SPLIT*Datasetsize))
-
 
     #We load our model
     autoencoder, encoder = autoencoder_model(layers.Input(shape=(None,128,1),  name='encoder_inputs'))
@@ -51,7 +51,7 @@ def training_pipeline(dataset_path, model_output_path, SPLIT = 0.7, epochs = 100
     autoencoder.fit(train_dataset, epochs = epochs, validation_data=test_dataset,
                                 callbacks = [tf.keras.callbacks.ModelCheckpoint(checkpoint_path, verbose=1, save_best_only=False, save_weights_only=False, mode='max')])
 
-
+    encoder.save(model_output_path+'encoder_model')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Load a model and a dataset to train the model.')
