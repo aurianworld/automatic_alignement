@@ -4,7 +4,6 @@ import os
 import subprocess
 import argparse
 import tensorflow as tf
-from keras.models import Model
 from keras import layers
 from autoencoder_model import autoencoder_model
 
