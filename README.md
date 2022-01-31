@@ -11,7 +11,7 @@ git clone https://github.com/aurianworld/automatic_alignement.git
 2. Install requirements:
 
 ```bash
-cd equivariant-imaging
+cd automatic_alignment
 pip install -r requirements.txt
 
 ```
