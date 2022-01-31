@@ -32,7 +32,7 @@ def autoencoder_model(encoder_inputs):
     #Attention Layer
     attn_out = layers.Attention(causal =True )([encoder_out, encoder_out])
 
-    encoder = Model(attn_out, encoder_out)
+    encoder = Model(encoder_inputs, attn_out)
 
     # Decoder
     conv_1D_transpose_layer = layers.Conv1DTranspose(16, 3, strides=2, activation='relu', padding='same')
