@@ -2,7 +2,7 @@ from keras.models import Model
 from keras import layers
 
 
-def autoencoder(encoder_inputs):
+def autoencoder_model(encoder_inputs):
     """Custom autoencoder model with attention layer
 
     Args:
