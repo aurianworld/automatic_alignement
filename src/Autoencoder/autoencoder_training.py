@@ -46,7 +46,7 @@ def training_pipeline(dataset_path, model_output_path, SPLIT = 0.7, epochs = 100
 
     #We preparee callbacks
     git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode("ascii").strip()
-    checkpoint_path = model_output_path + 'model_%s_{epoch:02d}_{accuracy:.4f}_{val_accuracy:.4f}.h5' % (git_hash)
+    checkpoint_path = model_output_path + 'model_'+git_hash+'.h5' 
     
     autoencoder.fit(train_dataset, epochs = epochs, validation_data=test_dataset,
                                 callbacks = [tf.keras.callbacks.ModelCheckpoint(checkpoint_path, verbose=1, save_best_only=False, save_weights_only=False, mode='max')])
