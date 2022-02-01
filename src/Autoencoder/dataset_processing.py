@@ -98,8 +98,13 @@ def dataset_processing(audio_paths, output_path, nb_of_frames=128, BATCHSIZE=32)
     os.chdir(command)
     print(os.getcwd())
 
+    files = [f for f in os.listdir(audio_paths) if f[-3:] in ['mp3']]
+    
+    #files = files[:BATCHSIZE]
+    #print('Only loading for debugging: ', files)
+
     #Loading the audio from the paths
-    ds = paths_to_dataset(os.listdir(audio_paths))
+    ds = paths_to_dataset(files)
 
     #Transforming the audios in Spectrograms
     ds = ds.map(
