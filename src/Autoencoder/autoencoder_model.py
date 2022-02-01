@@ -1,5 +1,5 @@
-from tf.keras.models import Model
-from tf.keras import layers
+from tensorflow.keras.models import Model
+from tensorflow.keras import layers
 
 
 def autoencoder_model(encoder_inputs):
