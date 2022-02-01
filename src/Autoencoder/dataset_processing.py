@@ -71,7 +71,7 @@ def normalize_spectrograms(x):
 def splitting_spectrograms(tensor,n):
     #We want to split our whole spectogram into bins of size n
     a =[]
-    q, r = tensor.shape[0]//n, tensor.shape[0]%n
+    q, r = tf.shape(tensor)[0]//n, tf.shape(tensor)[0]%n
     for i in range(q): 
       a.append(tensor[n*i:n*(i+1),:,:])
     a.append(tf.concat([tensor[q*n:,:,:],tf.zeros([n - r,128,1])],0))
@@ -159,10 +159,10 @@ if __name__ == '__main__':
     if args.nb_of_frames == None and args.batchsize != None :
         dataset_processing(args.audio_path, args.output_path, BATCHSIZE= args.batchsize)
 
-    if args.nb_of_frames != None and args.batchsize == None :
+    elif args.nb_of_frames != None and args.batchsize == None :
         dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames)
 
-    if args.nb_of_frames == None and args.batchsize == None :
+    elif args.nb_of_frames == None and args.batchsize == None :
         dataset_processing(args.audio_path, args.output_path)
 
     else:
