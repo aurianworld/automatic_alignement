@@ -3,6 +3,7 @@
 
 import os
 import argparse
+import subprocess, json
 import tensorflow as tf
 import tensorflow_io as tfio
 
@@ -78,6 +79,19 @@ def splitting_spectrograms(tensor,n):
 
     return tf.data.Dataset.from_tensor_slices(a)
 
+def is_compatible_mp3(filename):
+    format = subprocess.check_output(['ffprobe','-v', 'quiet', '-print_format','json','-show_format', '-i', filename]) 
+    format = json.loads(format.decode())
+
+    
+    if  ('tags' in format['format']) and \
+        ('compatible_brands' in format['format']['tags']) and \
+        (format['format']['tags']['compatible_brands'] == 'isomiso2'):
+        print('Removing %s from dataset because of incompatible isomiso format' % filename)
+        return False
+    else: 
+        return True
+
 #Main Function
 def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE):
     """This function take the audio path of the dataset and outputs a 
@@ -98,10 +112,15 @@ def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE):
     os.chdir(command)
     print(os.getcwd())
 
+    # load mp3 files
     files = [f for f in os.listdir(audio_paths) if f[-3:] in ['mp3']]
     
-    files = files[:BATCHSIZE]
-    print('Only loading for debugging: ', files)
+    # filter files that cannot be loaded
+    # incompatible_file_filter=['2014_Stenz_Mahler_IX-1.mp3']
+    files = [f for f in files if is_compatible_mp3(f)]
+
+    #files = files[:BATCHSIZE]
+    #print('Only loading one batch for debugging: ', files)
 
     #Loading the audio from the paths
     ds = paths_to_dataset(files)
@@ -158,3 +177,4 @@ if __name__ == '__main__':
 
     dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames,
                              BATCHSIZE= args.batchsize)
+
