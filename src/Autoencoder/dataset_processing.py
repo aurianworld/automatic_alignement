@@ -100,8 +100,8 @@ def dataset_processing(audio_paths, output_path, nb_of_frames=128, BATCHSIZE=32)
 
     files = [f for f in os.listdir(audio_paths) if f[-3:] in ['mp3']]
     
-    #files = files[:BATCHSIZE]
-    #print('Only loading for debugging: ', files)
+    files = files[:BATCHSIZE]
+    print('Only loading for debugging: ', files)
 
     #Loading the audio from the paths
     ds = paths_to_dataset(files)
@@ -151,7 +151,7 @@ if __name__ == '__main__':
                             help='Path where the dataset is saved')
     parser.add_argument('--nb_of_frames', type=int, 
                             help='Number of frames the Mel spectrograms will have, default 128')
-    parser.add_argument('--batchsize', type=int, 
+    parser.add_argument('--batchsize', type=int, default=10,
                             help='batch size, default 10')
 
     args = parser.parse_args()
