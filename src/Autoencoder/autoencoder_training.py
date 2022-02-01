@@ -59,21 +59,10 @@ if __name__ == '__main__':
                             help='Path of the processed dataset')
     parser.add_argument('--model_output_path', type=str, 
                             help='Path where the model is saved')
-    parser.add_argument('--split', type=float, 
+    parser.add_argument('--split', type=float, default=0.7,
                             help='Splitting factor between training and testing')
-    parser.add_argument('--epochs', type=int, 
+    parser.add_argument('--epochs', type=int, default=100,
                             help='Number of epochs to train the model')
 
     args = parser.parse_args()
-
-    if args.split == None and args.epochs == None:
-        training_pipeline(args.dataset_path, args.model_output_path)
-    
-    if args.split == None and args.epochs != None:
-        training_pipeline(args.dataset_path, args.model_output_path, epochs = args.epochs)
-
-    if args.split != None and args.epochs == None:
-        training_pipeline(args.dataset_path, args.model_output_path, SPLIT = args.split)
-
-    if args.split != None and args.epochs != None:
-        training_pipeline(args.dataset_path, args.model_output_path, SPLIT = args.split, epochs = args.epochs)
+    training_pipeline(args.dataset_path, args.model_output_path, SPLIT = args.split, epochs = args.epochs)
