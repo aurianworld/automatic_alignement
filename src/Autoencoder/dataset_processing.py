@@ -7,6 +7,11 @@ import tensorflow as tf
 import tensorflow_io as tfio
 
 
+try: 
+    AUTOTUNE = tf.data.AUTOTUNE
+except:
+    AUTOTUNE = tf.data.experimental.AUTOTUNE
+
 #Useful functions 
 def path_to_audio(path):
     """Reads and decodes an audio file (MP3) for now"""
@@ -91,17 +96,17 @@ def dataset_processing(audio_paths, output_path, nb_of_frames=128, BATCHSIZE=32)
 
     #Transforming the audios in Spectrograms
     ds = ds.map(
-        lambda x: audio_to_spectrograms(x), num_parallel_calls=tf.data.AUTOTUNE
+        lambda x: audio_to_spectrograms(x), num_parallel_calls=AUTOTUNE
     )
 
     #Transforming the Spectrograms into Mel Spectrograms
     ds = ds.map(
-        lambda x: spectrograms_to_melspectrograms(x), num_parallel_calls=tf.data.AUTOTUNE
+        lambda x: spectrograms_to_melspectrograms(x), num_parallel_calls=AUTOTUNE
     )
 
     #Normalizing the Mel Spectrograms Tensor 
     ds = ds.map(
-        lambda x: normalize_spectrograms(x), num_parallel_calls=tf.data.AUTOTUNE
+        lambda x: normalize_spectrograms(x), num_parallel_calls=AUTOTUNE
     )
 
     #We split each element of the dataset into a dataset into dataset of 
