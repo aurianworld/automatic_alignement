@@ -125,6 +125,8 @@ def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE, maxfil
     if maxfiles > 0 and len(files) > maxfiles:
         print('Reducing number of files from %d to %d (see maxfiles parameter)' % (len(files), maxfiles))
         files = random.sample(files, maxfiles)
+        
+    print('Final file list: ', files)
 
     #Loading the audio from the paths
     ds = paths_to_dataset(files)
