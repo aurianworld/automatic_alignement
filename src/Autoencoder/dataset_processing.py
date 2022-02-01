@@ -6,11 +6,18 @@ import argparse
 import tensorflow as tf
 import tensorflow_io as tfio
 
-
+# compatibility with tf.23 and tfio 0.16
 try: 
     AUTOTUNE = tf.data.AUTOTUNE
 except:
     AUTOTUNE = tf.data.experimental.AUTOTUNE
+
+try:
+    spectrogram = tfio.audio.spectrogram
+    melscale = tfio.audio.melscale
+except:
+    spectrogram = tfio.core.python.api.experimental.audio.spectrogram
+    melscale = tfio.core.python.api.experimental.audio.melscale
 
 #Useful functions 
 def path_to_audio(path):
@@ -37,7 +44,7 @@ def audio_to_spectrograms(x):
     # we need to squeeze the dimensions and then expand them again
     # after FFT
     x = tf.squeeze(x, axis=-1)
-    x = tfio.audio.spectrogram(x, nfft=256, window=256, stride=128) 
+    x = spectrogram(x, nfft=256, window=256, stride=128) 
     x = tf.expand_dims(x, axis=-1)
     
     return x
@@ -46,7 +53,7 @@ def audio_to_spectrograms(x):
 def spectrograms_to_melspectrograms(x):
     #Takes a spectrogram tensor and convert it into a a Mel Spectrograms
     x = tf.squeeze(x, axis=-1)    
-    x = tfio.audio.melscale(x, rate=16000, mels=128, fmin=20, fmax=8000)
+    x = melscale(x, rate=16000, mels=128, fmin=20, fmax=8000)
     x = tf.expand_dims(x, axis=-1)
     print(x[:,:128,:].shape)
     # Return the mel_spectrogram without the bin for the highest frequencies 
