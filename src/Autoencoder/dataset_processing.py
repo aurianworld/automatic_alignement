@@ -79,7 +79,7 @@ def splitting_spectrograms(tensor,n):
     return tf.data.Dataset.from_tensor_slices(a)
 
 #Main Function
-def dataset_processing(audio_paths, output_path, nb_of_frames=128, BATCHSIZE=32):
+def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE):
     """This function take the audio path of the dataset and outputs a 
     of Mel Spectrograms. The shape is (Batch_size, nb of frames, 128, 1)
 
@@ -149,22 +149,12 @@ if __name__ == '__main__':
                             help='Path of the dataset of the audios')
     parser.add_argument('--output_path', type=str, 
                             help='Path where the dataset is saved')
-    parser.add_argument('--nb_of_frames', type=int, 
+    parser.add_argument('--nb_of_frames', type=int, default=128 ,
                             help='Number of frames the Mel spectrograms will have, default 128')
     parser.add_argument('--batchsize', type=int, default=10,
                             help='batch size, default 10')
 
     args = parser.parse_args()
 
-    if args.nb_of_frames == None and args.batchsize != None :
-        dataset_processing(args.audio_path, args.output_path, BATCHSIZE= args.batchsize)
-
-    elif args.nb_of_frames != None and args.batchsize == None :
-        dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames)
-
-    elif args.nb_of_frames == None and args.batchsize == None :
-        dataset_processing(args.audio_path, args.output_path)
-
-    else:
-        dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames,
+    dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames,
                              BATCHSIZE= args.batchsize)
