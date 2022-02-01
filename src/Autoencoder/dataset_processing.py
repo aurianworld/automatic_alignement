@@ -3,6 +3,7 @@
 
 import os
 import argparse
+import random
 import subprocess, json
 import tensorflow as tf
 import tensorflow_io as tfio
@@ -93,7 +94,7 @@ def is_compatible_mp3(filename):
         return True
 
 #Main Function
-def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE):
+def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE, maxfiles=-1):
     """This function take the audio path of the dataset and outputs a 
     of Mel Spectrograms. The shape is (Batch_size, nb of frames, 128, 1)
 
@@ -121,6 +122,9 @@ def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE):
 
     #files = files[:BATCHSIZE]
     #print('Only loading one batch for debugging: ', files)
+    if maxfiles > 0 and len(files) > maxfiles:
+        print('Reducing number of files from %d to %d (see maxfiles parameter)' % (len(files), maxfiles))
+        files = random.sample(files, maxfiles)
 
     #Loading the audio from the paths
     ds = paths_to_dataset(files)
@@ -172,9 +176,11 @@ if __name__ == '__main__':
                             help='Number of frames the Mel spectrograms will have, default 128')
     parser.add_argument('--batchsize', type=int, default=10,
                             help='batch size, default 10')
+    parser.add_argument('--maxfiles', type=int, default=-1,
+                            help='maximum number of files to process, default -1')
 
     args = parser.parse_args()
 
     dataset_processing(args.audio_path, args.output_path, nb_of_frames= args.nb_of_frames,
-                             BATCHSIZE= args.batchsize)
+                             BATCHSIZE= args.batchsize, maxfiles= args.maxfiles)
 
