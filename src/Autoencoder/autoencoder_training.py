@@ -49,7 +49,7 @@ def training_pipeline(dataset_path, model_output_path, SPLIT = 0.7, epochs = 100
     autoencoder.compile(optimizer="adam", loss="binary_crossentropy")
 
     #We preparee callbacks
-    checkpoint_path = model_output_path + 'model_'+git_hash+'.h5' 
+    checkpoint_path = model_output_path + 'model_'+git_hash+'{epoch:02d}_{binary_crossentropy:.4f}_{val_binary_crossentropy:.4f}.h5'
     
     autoencoder.fit(train_dataset, epochs = epochs, validation_data=test_dataset,
                                 callbacks = [tf.keras.callbacks.ModelCheckpoint(checkpoint_path, verbose=1, save_best_only=False, save_weights_only=False, mode='max')])
