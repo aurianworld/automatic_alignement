@@ -130,36 +130,45 @@ def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE, maxfil
 
     #Loading the audio from the paths
     ds = paths_to_dataset(files)
+    print('file dataset cardinality: ', tf.data.experimental.cardinality(ds))
 
     #Transforming the audios in Spectrograms
     ds = ds.map(
         lambda x: audio_to_spectrograms(x), num_parallel_calls=AUTOTUNE
     )
+    print('specgram dataset cardinality: ', tf.data.experimental.cardinality(ds))
 
     #Transforming the Spectrograms into Mel Spectrograms
     ds = ds.map(
         lambda x: spectrograms_to_melspectrograms(x), num_parallel_calls=AUTOTUNE
     )
+    print('melscec dataset cardinality: ', tf.data.experimental.cardinality(ds))
 
     #Normalizing the Mel Spectrograms Tensor 
     ds = ds.map(
         lambda x: normalize_spectrograms(x), num_parallel_calls=AUTOTUNE
     )
+    print('norm dataset cardinality: ', tf.data.experimental.cardinality(ds))
+
 
     #We split each element of the dataset into a dataset into dataset of 
     #size (Batch_size, nb of frames, 128, 1)
     splitted_mel_spectrograms_ds = []
     for elem in ds:
-        splitted_mel_spectrograms_ds.append(splitting_spectrograms(elem,nb_of_frames).batch(batch_size = BATCHSIZE))
+        elem_ds = splitting_spectrograms(elem,nb_of_frames).batch(batch_size = BATCHSIZE)
+        print('splitting dataset cardinality: ', tf.data.experimental.cardinality(elem_ds))
+        splitted_mel_spectrograms_ds.append(elem_ds)
 
     #We now concatenate all the "small" dataset 
 
     ds = splitted_mel_spectrograms_ds[0]
 
     for i in range(1,len(splitted_mel_spectrograms_ds)):
-        ds.concatenate(splitted_mel_spectrograms_ds[i])
+        ds = ds.concatenate(splitted_mel_spectrograms_ds[i])
+        print('concatenated growing dataset cardinality: ', tf.data.experimental.cardinality(ds))
 
     #We Save the Dataset 
+    print('final dataset cardinality: ', tf.data.experimental.cardinality(ds))
     tf.data.experimental.save(ds, output_path)
     print("Dataset saved in: ", output_path)
 
