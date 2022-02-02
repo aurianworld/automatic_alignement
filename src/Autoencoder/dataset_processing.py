@@ -81,15 +81,22 @@ def splitting_spectrograms(tensor,n):
     return tf.data.Dataset.from_tensor_slices(a)
 
 def is_compatible_mp3(filename):
-    format = subprocess.check_output(['ffprobe','-v', 'quiet', '-print_format','json','-show_format', '-i', filename]) 
+    format = subprocess.check_output(['ffprobe','-v', 'quiet', '-print_format','json','-show_format', '-show_streams', '-i', filename]) 
     format = json.loads(format.decode())
-
+    #print(format)
     
     if  ('tags' in format['format']) and \
         ('compatible_brands' in format['format']['tags']) and \
         (format['format']['tags']['compatible_brands'] == 'isomiso2'):
         print('Removing %s from dataset because of incompatible isomiso format' % filename)
         return False
+
+    elif  ('codec_name' in format['streams'][0]) and \
+        (format['streams'][0]['codec_name'] != 'mp3'):
+        print('Removing %s from dataset because of incompatible format: %s' % (filename,format['streams'][0]['codec_name']))
+        return False
+
+
     else: 
         return True
 
