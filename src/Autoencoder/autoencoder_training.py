@@ -19,6 +19,11 @@ def training_pipeline(dataset_path, model_output_path, SPLIT = 0.7, epochs = 100
         epochs (int, optional): Number of epochs to run the model. Defaults to 100.
     """
 
+    # get the git hash before changing the directory
+    # note: we really should avoid changing the directory    
+    git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], shell=False).decode("ascii").strip()
+
+
     #We Work in the directory of the dataset
     command = (dataset_path)
     os.chdir(command)
@@ -44,7 +49,6 @@ def training_pipeline(dataset_path, model_output_path, SPLIT = 0.7, epochs = 100
     autoencoder.compile(optimizer="adam", loss="binary_crossentropy")
 
     #We preparee callbacks
-    git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode("ascii").strip()
     checkpoint_path = model_output_path + 'model_'+git_hash+'.h5' 
     
     autoencoder.fit(train_dataset, epochs = epochs, validation_data=test_dataset,
