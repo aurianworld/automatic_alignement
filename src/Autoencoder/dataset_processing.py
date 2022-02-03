@@ -96,6 +96,10 @@ def is_compatible_mp3(filename):
         print('Removing %s from dataset because of incompatible format: %s' % (filename,format['streams'][0]['codec_name']))
         return False
 
+    elif  ('codec_name' in format['streams'][0]) and \
+        (format['streams'][0]['sample_rate'] != '44100'):
+        print('Removing %s from dataset because of incompatible sample rate: %s' % (filename,format['streams'][0]['sample_rate']))
+        return False
 
     else: 
         return True
