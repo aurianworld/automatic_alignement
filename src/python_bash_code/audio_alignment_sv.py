@@ -40,7 +40,7 @@ def audio_alignment_sv(audio_1_path, audio_2_path, config_path):
     output_wp = config.get("config", "output_wp") #output path of the warping path
     step_weights = np.array([1.5, 1.5, 2.0]) #DTW step weights
     threshold_rec = 10 ** 6 #Defines the maximum area that is spanned by the rectangle of two consecutive elements in the alignment 
-    result = config.getint("config","result") #Flag to compute the results of the alignement
+    result = config.getboolean("config","result") #Flag to compute the results of the alignement
 
 
     #Loading the audio
