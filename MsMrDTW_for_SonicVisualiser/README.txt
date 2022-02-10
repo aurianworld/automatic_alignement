@@ -22,7 +22,6 @@ If the folder MsMrDTW_for_SonicVisualiser is on the desktop it should be somethi
         - conda create -n mrmsdtw python=3.7
         - conda activate mrmsdtw
         - pip install -r [YOUR_PATH]/MsMrDTW_for_SonicVisualiser/requirements.txt
-        - chmod +x [YOUR_PATH]/MsMrDTW_for_SonicVisualiser/mrmsdtw_for_sv.py
         - chmod +x [YOUR_PATH]/MsMrDTW_for_SonicVisualiser/MrMsDTW_for_sv_bash.sh
 
 
