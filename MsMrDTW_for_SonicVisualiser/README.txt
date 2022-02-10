@@ -12,6 +12,8 @@ In the folder MsMrDTW_for_SonicVisualizer execute "MsMrDTW_for_SonicVisualiser/M
         - Click the Launchpad icon  in the Dock, type Terminal in the search field, then click Terminal.
         or
         - In the Finder , open the /Applications/Utilities folder, then double-click Terminal.
+        or 
+        - search for Terminal and press enter
 
 (ATTENTION! change: [YOUR_PATH] into the path that correspond to the MsMrDTW_for_SonicVisualiser folder for you. 
 You see it on Mac by activating :  View -> Show Path bar 
