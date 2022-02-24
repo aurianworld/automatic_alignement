@@ -21,8 +21,12 @@ cp -f "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh_ "${MY_DIRECTORY}"/MrMsDTW_for_sv
 echo sed -i "s|[YOUR_PATH]|${MY_DIRECTORY}|" "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh
 sed -i 's|\[YOUR_PATH\]|'${MY_DIRECTORY}'|g' "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 sed -i 's|\[YOUR_ROOT\]|/home/'${MY_ROOT}'|g' "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh #FOR LINUX
-# sed -i 's|\[YOUR_ROOT\]|'/Users/'${MY_ROOT}'|g' "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh #FOR LINUX
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+sed -i 's|\[YOUR_ROOT\]|/Users/'${MY_ROOT}'|g' "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh #FOR LINUX
+fi
+
 
 # 3. edit sonic visualiser config file
 SV_CONFIG="/home/"$MY_ROOT"/.config/sonic-visualiser/Sonic Visualiser.conf" #FOR LINUX
