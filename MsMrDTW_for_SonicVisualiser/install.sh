@@ -1,5 +1,6 @@
 #! /bin/bash
 
+set -x
 # this is the install file for MsMrDTW_for_SonicVisualiser 
 # it should 
 # 1. detect where this folder lives and save that in $MY_NAME
@@ -41,6 +42,7 @@ conda create -n mrmsdtw2 python=3.7
 
 # 5. install requirements 
 conda deactivate
+conda config --set auto_activate_base false # stop base environment from automatic load
 conda activate mrmsdtw2
 pip install -r ${MY_DIRECTORY}/requirements.txt
 
