@@ -9,35 +9,35 @@ conda activate sdia-python
 AUDIOREF=$1
 AUDIOALIGN=$2
 
-# tuning
-# sonic-annotator -l | grep tune
-
-echo configuring tuning differences
+# Creating the TTL files
+# Creating Tuning-difference TTL
 sonic-annotator -s vamp:tuning-difference:tuning-difference:cents > /home/osboxes/automatic_alignement/config_files/Match_alignment/tuning-difference-transform.ttl
-# sonic-annotator -t tuning-difference-transform.ttl --multiplex --writer csv --csv-force  2003_Gielen_Mahler_IX-1_s147.1_e210.1.wav 1965_Bernstein_Mahler_IX-1_s147.1_e210.1.wav #~/Downloads/glitch_example_shorter.wav ~/Downloads/dw_f2_demo_audio_cut_click_16.413_pitched.wav
+# Creating Match-transform TTL
+sonic-annotator -s vamp:match-vamp-plugin:match:path > /home/osboxes/automatic_alignement/config_files/Match_alignment/match-transform.ttl 
 
-# to get the frequency directly
 
+# Getting the frequency difference and storing it into the Match TTL files.
 echo computing the tuning frequency
-#FREQ2=$(sonic-annotator -t /home/osboxes/automatic_alignement/config_files/Match_alignment/tuning-difference-transform.ttl --multiplex --writer csv --csv-force $AUDIOALIGN $AUDIOREF  2>&1 | grep "channel 1: overall best Hz = " | grep -o -P '[0-9]+.[0-9]+')
-#echo tuning frequency is $FREQ2
-#PLINE=$(cat match-transform.ttl | grep -n freq2 | cut -d : -f 1 | awk '{print $0+1}')
+FREQ2=$(sonic-annotator -t /home/osboxes/automatic_alignement/config_files/Match_alignment/tuning-difference-transform.ttl --multiplex --writer csv --csv-force $AUDIOALIGN $AUDIOREF  2>&1 | grep "channel 1: overall best Hz = " | grep -o -P '[0-9]+.[0-9]+')
+echo tuning frequency is $FREQ2
+PLINE=$(cat /home/osboxes/automatic_alignement/config_files/Match_alignment/match-transform.ttl | grep -n freq2 | cut -d : -f 1 | awk '{print $0+1}')
 
 echo The frequency will be inserted into the line: $PLINE
 
-# Creating Match-transform TTL
-# sonic-annotator -s vamp:match-vamp-plugin:match:path > /home/osboxes/automatic_alignement/config_files/Match_alignment/match-transform.ttl # get transform skeleton
-# use SED to exchange match-transform frequency in PLINE+1 into match-transform_modified.ttl
-#cat match-transform.ttl | sed  "${PLINE}s/        vamp\:value \"440\"\^\^xsd\:float \;/        vamp\:value \"${FREQ2}\"\^\^xsd\:float \;/" > /home/osboxes/automatic_alignement/config_files/Match_alignment/match-transform_modified.ttl
+# Using SED to exchange match-transform frequency in PLINE+1 into match-transform_modified.ttl
+cat /home/osboxes/automatic_alignement/config_files/Match_alignment/match-transform.ttl | sed  "${PLINE}s/        vamp\:value \"440\"\^\^xsd\:float \;/        vamp\:value \"${FREQ2}\"\^\^xsd\:float \;/" > /home/osboxes/automatic_alignement/config_files/Match_alignment/match-transform_modified.ttl
+
+
 
 # alignment
-# sonic-annotator -l | grep match # check if match is installed and what outputs
-
 echo computing the warping path
 
-sonic-annotator -t /home/osboxes/automatic_alignement/config_files/Match_alignment/match-transform.ttl --multiplex --writer csv --csv-force  $AUDIOREF $AUDIOALIGN
-# find output in: ~/Downloads/glitch_example_shorter_vamp_match-vamp-plugin_match_path.csv
+sonic-annotator -t /home/osboxes/automatic_alignement/config_files/Match_alignment/match-transform_modified.ttl --multiplex --writer csv --csv-force  $AUDIOREF $AUDIOALIGN 2>&1 > /home/osboxes/Desktop/Dataset/05_Warping_path/01_MATCH/1965-2003_147.1_210.1.csv
+# find output in working directory
 
-
+#Evaluating the WP 
 echo running the evaluation of the warpping path with python
-/home/osboxes/automatic_alignement/src/python_bash_code/evaluate_alignment.py --wp_file '/home/osboxes/Desktop/Dataset/01_Audio/02_Cropped_Symphonies/2003_Gielen_Mahler_IX-1_s147.1_e210.1_vamp_match-vamp-plugin_match_path.csv' --annotation_ref '/home/osboxes/automatic_alignement/data_sync_experiment/2003_Gielen_Mahler_IX-1_bpb_CU_final_updated_22-11-2021_s147.1_e210.1.csv' --annotation_align '/home/osboxes/automatic_alignement/data_sync_experiment/1965_Bernstein_Mahler_IX-1_bpb_147-329_s147.1_e210.1.csv'
+/home/osboxes/automatic_alignement/src/Utilities/evaluate_alignment.py --wp_file '/home/osboxes/Desktop/Dataset/01_Audio/02_Cropped_Symphonies/1965_Bernstein_Mahler_IX-1_s147.1_e210.1_vamp_match-vamp-plugin_match_path.csv' --annotation_ref '/home/osboxes/automatic_alignement/data_sync_experiment/1965_Bernstein_Mahler_IX-1_bpb_147-329_s147.1_e210.1.csv' --annotation_align '/home/osboxes/automatic_alignement/data_sync_experiment/2003_Gielen_Mahler_IX-1_bpb_CU_final_updated_22-11-2021_s147.1_e210.1.csv' 
+
+
+#TO DO create automatic script to find the WP and the ground truth annotations directly from the name of the audio files
