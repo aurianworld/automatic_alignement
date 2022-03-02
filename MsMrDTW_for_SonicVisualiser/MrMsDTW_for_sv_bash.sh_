@@ -1,10 +1,11 @@
 #!/bin/bash
 
+set -x 
 #Making sure that we are using the good environement 
 #conda init bash
 
 source '[YOUR_ROOT]/miniconda3/etc/profile.d/conda.sh'
 conda deactivate
-conda activate mrmsdtw
+conda activate mrmsdtw2
 
-[YOUR_PATH]/mrmsdtw_for_sv.py --audio_1 $1 --audio_2 $2 --config_path "[YOUR_PATH]/MrMsDTW_config.conf"
+[YOUR_PATH]/mrmsdtw_for_sv.py --audio_1 "$1" --audio_2 "$2" --config_path "[YOUR_PATH]/MrMsDTW_config.conf"

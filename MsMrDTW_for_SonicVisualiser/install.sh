@@ -1,5 +1,6 @@
 #! /bin/bash
 
+set -x
 # this is the install file for MsMrDTW_for_SonicVisualiser 
 # it should 
 # 1. detect where this folder lives and save that in $MY_NAME
@@ -20,8 +21,12 @@ cp -f "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh_ "${MY_DIRECTORY}"/MrMsDTW_for_sv
 echo sed -i "s|[YOUR_PATH]|${MY_DIRECTORY}|" "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh
 sed -i 's|\[YOUR_PATH\]|'${MY_DIRECTORY}'|g' "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 sed -i 's|\[YOUR_ROOT\]|/home/'${MY_ROOT}'|g' "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh #FOR LINUX
-# sed -i 's|\[YOUR_ROOT\]|'/Users/'${MY_ROOT}'|g' "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh #FOR LINUX
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+sed -i 's|\[YOUR_ROOT\]|/Users/'${MY_ROOT}'|g' "${MY_DIRECTORY}"/MrMsDTW_for_sv_bash.sh #FOR LINUX
+fi
+
 
 # 3. edit sonic visualiser config file
 SV_CONFIG="/home/"$MY_ROOT"/.config/sonic-visualiser/Sonic Visualiser.conf" #FOR LINUX
@@ -41,6 +46,7 @@ conda create -n mrmsdtw2 python=3.7
 
 # 5. install requirements 
 conda deactivate
+conda config --set auto_activate_base false # stop base environment from automatic load
 conda activate mrmsdtw2
 pip install -r ${MY_DIRECTORY}/requirements.txt
 
