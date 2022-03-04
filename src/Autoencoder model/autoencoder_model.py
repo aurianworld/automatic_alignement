@@ -37,7 +37,7 @@ def autoencoder_model(encoder_inputs):
     # Decoder
     conv_1D_transpose_layer = layers.Conv1DTranspose(16, 3, strides=2, activation='relu', padding='same')
     x = layers.TimeDistributed(conv_1D_transpose_layer)(attn_out)
-    conv_1D_layer = layers.Conv1D(16, 3, activation='relu', padding='same')
+    conv_1D_layer = layers.Conv1D(32, 3, activation='relu', padding='same')
     x = layers.TimeDistributed(conv_1D_layer)(x)
 
 
