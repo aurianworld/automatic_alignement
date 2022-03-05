@@ -18,6 +18,7 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
     import pandas as pd
     import time
     import numpy as np
+    import os
 
     t2 = 0
     t3 = 0
@@ -31,6 +32,8 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
             t = time.time()
 
             data_path = kwargs.get(arg)
+            file_name = os.path.basename(data_path)
+            folder_path = '/home/osboxes/Desktop/Dataset/02_Beat_per_beat_annotation/02_Cropped_Symphonies/'
             
             data = pd.read_table(data_path, header = None)
 
@@ -45,12 +48,14 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
 
             data[0] = data[0] - t_start
 
-            output_data_path_csv = data_path[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.csv'
-            output_data_path_txt = data_path[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.txt'
+            # output_data_path_csv = file_name[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.csv'
+            output_data_path_txt = folder_path+file_name[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.txt'
 
-            data.to_csv(output_data_path_csv, header = False, index = False)
+            # data.to_csv(output_data_path_csv, header = False, index = False)
 
             data_numpy = data.to_numpy()
+            
+            print(output_data_path_txt)
 
             np.savetxt(output_data_path_txt, data_numpy, fmt = ["%10.9f","%10.1f"])
 
@@ -58,8 +63,11 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
 
         #We crop the audio file
         if arg == "audio_path" and kwargs.get(arg) != None :
+
             t = time.time()
             audio_path = kwargs.get(arg)
+            file_name = os.path.basename(audio_path)
+            folder_path = '/home/osboxes/Desktop/Dataset/01_Audio/02_Cropped_Symphonies/'
 
             # #We Check if we have a wav or a mp3
             # if audio_path[-4:] == ".wav":
@@ -69,8 +77,8 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
 
 
             #We crop the audio and export it as wav
-            output_audio_path = audio_path[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.wav'
-
+            output_audio_path = folder_path+file_name[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.wav'
+            print(output_audio_path)
             bashCommand = "ffmpeg -loglevel quiet -ss "+ str(t_start) + " -t "+ str(t_stop-t_start)+" -i "+audio_path+" "+ output_audio_path
 
             args = shlex.split(bashCommand)
