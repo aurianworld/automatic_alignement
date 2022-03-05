@@ -27,8 +27,8 @@ def annotation_from_audio(audio_path):
             pattern = file_name + r'.*' + cropped_beats  #We know that the annotation files have additional info after the file name 
             search = re.search(pattern,base_name)
             if search :
-                print(folder_path + search.group(0) + '.txt') #when used in terminal
-                return folder_path + search.group(0) + '.txt'
+                print(folder_path + search.group(0) + '.csv') #when used in terminal
+                return folder_path + search.group(0) + '.csv'
 
         else :
             print('No annotation for this audio file')
