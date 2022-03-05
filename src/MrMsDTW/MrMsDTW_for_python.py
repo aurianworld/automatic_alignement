@@ -85,10 +85,11 @@ def audio_alignment(audio_1_path, audio_2_path, config_path):
         #DEFINE FILE_PATH_REF and FILE_PATH_ALIGN FROM the audio path TODO 
         beat_annotations_ref = pd.read_csv(filepath_or_buffer=annotation_from_audio(audio_1_path), names = header_name)
         beat_annotations_align = pd.read_csv(filepath_or_buffer=annotation_from_audio(audio_2_path), names = header_name)
-        beat_annotations_align = beat_annotations_align.loc[beat_annotations_align['beat'].isin(beat_annotations_ref['beat'])].reset_index(drop = True) #We make sure that we compare only the same beats 
+         
+        print(wp.shape)
+        print(len(beat_annotations_ref),len(beat_annotations_align))
 
-
-        beat_positions_ref_transferred_to_align = scipy.interpolate.interp1d(wp[0]/ feature_rate , wp[1]/ feature_rate , kind='linear')(beat_annotations_ref["time"])
+        beat_positions_ref_transferred_to_align = scipy.interpolate.interp1d(wp[0]/ feature_rate , wp[1]/ feature_rate , bounds_error=False, fill_value=[0.], kind='linear')(beat_annotations_ref["time"])
         mean_absolute_error, accuracy_at_tolerances = evaluate_synchronized_positions(beat_annotations_align["time"] * 1000, beat_positions_ref_transferred_to_align * 1000)
 
 
