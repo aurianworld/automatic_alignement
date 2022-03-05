@@ -19,7 +19,7 @@ from synctoolbox.dtw.mrmsdtw import sync_via_mrmsdtw
 from synctoolbox.dtw.utils import make_path_strictly_monotonic
 
 
-def audio_alignment_sv(audio_1_path, audio_2_path, config_path): 
+def audio_alignment(audio_1_path, audio_2_path, config_path): 
     """The audio_alignement_sv function will be used by sonic visualiser to perform an alignement between two audio files.
 
 

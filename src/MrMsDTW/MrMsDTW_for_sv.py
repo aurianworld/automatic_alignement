@@ -74,7 +74,7 @@ def audio_alignment_sv(audio_1_path, audio_2_path, config_path):
     if save_warping_path:
         np.savetxt(output_wp+".csv", wp.T/feature_rate,fmt = '%.5f',delimiter = ',')
 
-
+    #Printing the pairs for Sonic Visualiser to do the align
     for _, pair in enumerate(wp.T/feature_rate):
             print(tuple(pair)[0],',',tuple(pair)[1])
 
