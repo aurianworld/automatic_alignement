@@ -20,8 +20,22 @@ def annotation_from_audio(audio_path):
         for file in os.listdir(folder_path):
             
             base_name = os.path.basename(file)
-            file_name = re.sub(cropped_beats, '',file_name)
-            pattern = file_name + r'.*' + cropped_beats
+            file_name = re.sub(cropped_beats, '',file_name) #We use only the file name without the beat start and end markers
+            pattern = file_name + r'.*' + cropped_beats  #We know that the annotation files have additional info after the file name 
             search = re.search(pattern,base_name)
             if search :
                 return folder_path + search.group(0) + '.txt'
+            else :
+                return 'No annotation for this audio file'
+    
+    #If it is not cropped:  
+    folder_path = '/home/osboxes/Desktop/Dataset/02_Beat_per_beat_annotation/01_Full_Symphonies/'
+    for file in os.listdir(folder_path):
+        
+        base_name = os.path.basename(file)
+        pattern = file_name + r'.*' 
+        search = re.search(pattern,base_name)
+        if search :
+            return folder_path + search.group(0)
+        else :
+                return 'No annotation for this audio file'
