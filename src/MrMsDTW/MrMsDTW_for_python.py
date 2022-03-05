@@ -75,10 +75,6 @@ def audio_alignment_sv(audio_1_path, audio_2_path, config_path):
     if save_warping_path:
         np.savetxt(output_wp+".csv", wp.T/feature_rate,fmt = '%.5f',delimiter = ',')
 
-    #Print of the each pair for Sonic Visualiser
-    for _, pair in enumerate(wp.T/feature_rate):
-            print(tuple(pair)[0],',',tuple(pair)[1])
-
 
     #Computing the MAE and Standard deviation to evaluate the alignment 
 
