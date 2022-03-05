@@ -158,8 +158,8 @@ def dataset_processing(audio_paths, output_path, nb_of_frames, BATCHSIZE, maxfil
     print('norm dataset cardinality: ', tf.data.experimental.cardinality(ds))
 
 
-    #We split each element of the dataset into a dataset into dataset of 
-    #size (Batch_size, nb of frames, 128, 1)
+    #We split each element of the dataset into a dataset of 
+    #size: (Batch_size, nb of frames, 128, 1)
     splitted_mel_spectrograms_ds = []
     for elem in ds:
         elem_ds = splitting_spectrograms(elem,nb_of_frames).batch(batch_size = BATCHSIZE)
