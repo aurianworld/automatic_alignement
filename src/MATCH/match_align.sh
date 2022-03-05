@@ -37,7 +37,7 @@ sonic-annotator -t /home/osboxes/automatic_alignement/config_files/Match_alignme
 
 #Evaluating the WP 
 echo running the evaluation of the warpping path with python
-/home/osboxes/automatic_alignement/src/Utilities/evaluate_alignment.py --wp_file '/home/osboxes/Desktop/Dataset/05_Warping_path/01_MATCH/2003_Gielen_Mahler_IX-1_s147.1_e210.1_vamp_match-vamp-plugin_match_path.csv' --annotation_ref '/home/osboxes/automatic_alignement/data_sync_experiment/2003_Gielen_Mahler_IX-1_bpb_CU_final_updated_22-11-2021_s147.1_e210.1.csv' --annotation_align  '/home/osboxes/automatic_alignement/data_sync_experiment/1965_Bernstein_Mahler_IX-1_bpb_147-329_s147.1_e210.1.csv' 
+/home/osboxes/automatic_alignement/src/Utilities/evaluate_alignment.py --wp_file '/home/osboxes/Desktop/Dataset/05_Warping_path/01_MATCH/2003_Gielen_Mahler_IX-1_s147.1_e157.1_vamp_match-vamp-plugin_match_path.csv' --audio_path_ref $AUDIOREF --audio_path_align $AUDIOALIGN
 
 
 #TO DO create automatic script to find the WP and the ground truth annotations directly from the name of the audio files

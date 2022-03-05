@@ -7,9 +7,10 @@ import scipy
 
 from synctoolbox.dtw.utils import evaluate_synchronized_positions
 from synctoolbox.dtw.utils import make_path_strictly_monotonic
+from Utilities.annotation_path_from_audio_path import annotation_from_audio
 
 
-def evaluate_alignment(wp_file,annotation_ref,annotation_align):
+def evaluate_alignment(wp_file,audio_path_ref,audio_path_align):
     header_name = ['time','beat']
 
     wp = np.genfromtxt(wp_file, delimiter=',').T
@@ -17,9 +18,9 @@ def evaluate_alignment(wp_file,annotation_ref,annotation_align):
 
     print(wp[0][-1])
 
-    #GET THE ANNOTATION PATH FROM AUDIO PATH -> TODO    
-    beat_annotations_ref = pd.read_csv(filepath_or_buffer=annotation_ref, names = header_name).reset_index(drop = True)
-    beat_annotations_align = pd.read_csv(filepath_or_buffer=annotation_align, names = header_name).reset_index(drop = True)
+    #GET THE ANNOTATION PATH FROM AUDIO PATH    
+    beat_annotations_ref = pd.read_csv(filepath_or_buffer=annotation_from_audio(audio_path_ref), names = header_name).reset_index(drop = True)
+    beat_annotations_align = pd.read_csv(filepath_or_buffer=annotation_from_audio(audio_path_align), names = header_name).reset_index(drop = True)
     #beat_annotations_align = beat_annotations_align.loc[beat_annotations_align['beat'].isin(beat_annotations_ref['beat'])].reset_index(drop = True) #We make sure that we compare only the same beats 
 
     beat_positions_ref_transferred_to_align = scipy.interpolate.interp1d(wp[1] , wp[0], bounds_error=False, fill_value=[0.], kind='linear')(beat_annotations_ref["time"])
@@ -44,11 +45,11 @@ if __name__ == '__main__':
 
     parser.add_argument('--wp_file', type=str, 
                             help='Path of the alignement file csv or txt')
-    parser.add_argument('--annotation_ref', type=str, 
-                            help='Path of the annotation file of the ref csv or txt')
-    parser.add_argument('--annotation_align', type=str, 
-                            help='Path of the annotation file of the align csv or txt')
+    parser.add_argument('--audio_path_ref', type=str, 
+                            help='Path of the reference audio ')
+    parser.add_argument('--audio_path_align', type=str, 
+                            help='Path of the audio to align')
 
     args = parser.parse_args()
-    print(args.wp_file, args.annotation_ref, args.annotation_align)
-    evaluate_alignment(args.wp_file, args.annotation_ref, args.annotation_align)
+    print(args.wp_file, args.audio_path_ref, args.annotation_align)
+    evaluate_alignment(args.wp_file, args.audio_path_ref, args.audio_path_align)
