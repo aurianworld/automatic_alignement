@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, re
+import os, re, argparse
 
 def annotation_from_audio(audio_path):
 
@@ -41,3 +41,16 @@ def annotation_from_audio(audio_path):
             return folder_path + search.group(0)
         else :
                 return 'No annotation for this audio file'
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Getting the annotation path of an audio file of the dataset')
+
+    parser.add_argument('--audio_path', type=str, 
+                            help='Path of the audio file')
+
+    
+
+    args = parser.parse_args()
+    print(args.audio_path)
+    annotation_from_audio(audio_path = args.audio_path)
