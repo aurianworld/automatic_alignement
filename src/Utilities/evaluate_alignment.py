@@ -20,12 +20,12 @@ def evaluate_alignment(wp_file,audio_path_ref,audio_path_align):
     #GET THE ANNOTATION PATH FROM AUDIO PATH    
     beat_annotations_ref = pd.read_csv(filepath_or_buffer=annotation_from_audio(audio_path_ref), names = header_name).reset_index(drop = True)
     beat_annotations_align = pd.read_csv(filepath_or_buffer=annotation_from_audio(audio_path_align), names = header_name).reset_index(drop = True)
-    #beat_annotations_align = beat_annotations_align.loc[beat_annotations_align['beat'].isin(beat_annotations_ref['beat'])].reset_index(drop = True) #We make sure that we compare only the same beats 
+    # beat_annotations_align = beat_annotations_align.loc[beat_annotations_align['beat'].isin(beat_annotations_ref['beat'])].reset_index(drop = True)
 
     beat_positions_ref_transferred_to_align = scipy.interpolate.interp1d(wp[1] , wp[0], bounds_error=False, fill_value=[0.], kind='linear')(beat_annotations_ref["time"])
     
 
-    mean_absolute_error, accuracy_at_tolerances = evaluate_synchronized_positions(beat_annotations_align["time"] * 1000, beat_positions_ref_transferred_to_align * 1000)
+    mean_absolute_error, accuracy_at_tolerances = evaluate_synchronized_positions(beat_annotations_align["time"][:-1] * 1000, beat_positions_ref_transferred_to_align[:-1] * 1000)
 
 
     beat_position_transfered_ref_to_align = pd.DataFrame(data = beat_positions_ref_transferred_to_align, columns = ["time"])
