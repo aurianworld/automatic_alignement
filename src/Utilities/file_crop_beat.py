@@ -48,16 +48,15 @@ def file_crop_beat(beat_start=1.1, beat_stop=32.1 ,**kwargs):
 
             data[0] = data[0] - t_start
 
-            # output_data_path_csv = file_name[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.csv'
-            output_data_path_txt = folder_path+file_name[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.txt'
+            output_data_path_csv = folder_path+file_name[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.csv'
+            # output_data_path_txt = folder_path+file_name[:-4]+'_s'+str(beat_start)+'_'+'e'+str(beat_stop)+'.txt'
 
-            # data.to_csv(output_data_path_csv, header = False, index = False)
+            data.to_csv(output_data_path_csv, header = False, index = False)
 
-            data_numpy = data.to_numpy()
+            # data_numpy = data.to_numpy()
             
-            print(output_data_path_txt)
 
-            np.savetxt(output_data_path_txt, data_numpy, fmt = ["%10.9f","%10.1f"])
+            # np.savetxt(output_data_path_txt, data_numpy, fmt = ["%10.9f","%10.1f"])
 
             t3 = time.time() - t
 

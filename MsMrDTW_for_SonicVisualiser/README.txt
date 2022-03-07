@@ -1,4 +1,4 @@
-[Here are the steps to setup the new alignment in Sonic Visualiser]
+[Here are the steps to setup the new alignment in Sonic Visualiser On a Linux machine]
 
 [First - Install Sonic Visualiser]
 Install Sonic Visualiser from the download page: https://sonicvisualiser.org/download.html

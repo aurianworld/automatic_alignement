@@ -25,7 +25,7 @@
     ] ;
     vamp:parameter_binding [
         vamp:parameter [ vamp:identifier "freq2" ] ;
-        vamp:value "438.985"^^xsd:float ;
+        vamp:value "442.293"^^xsd:float ;
     ] ;
     vamp:parameter_binding [
         vamp:parameter [ vamp:identifier "gradientlimit" ] ;
